@@ -29,6 +29,14 @@
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
         //--------
 
+        //Iluminação		
+		const directLight = new THREE.DirectionalLight(0xffffff, 1);
+		directLight.position.set(-10, 0, 10);
+		directLight.target.position.set(0, 0, 0);
+		const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+		scene.add(ambientLight, directLight);
+		scene.add(directLight.target);
+
         const gridHelper = new THREE.GridHelper(10, 10);
         //scene.add(gridHelper);
 
@@ -43,7 +51,7 @@
 
         scene.background = spacebg;
 
-        const ground_geometry = new THREE.BoxGeometry(50, 0.5, 50);
+        const ground_geometry = new THREE.BoxGeometry(70, 0.5, 50);
         var ground_material = new THREE.MeshBasicMaterial({
             map: colorMap
         });
@@ -52,9 +60,24 @@
 
         scene.add(ground);
 
+        // Loader
+		const gltfLoader = new THREE.GLTFLoader();
+		
+		const url = '/assets/cliff/Desert_Western_Cliff_Layered_XL_02_uk5oded_High.gltf';
+		
+		gltfLoader.load(url, (gltf) => {
+			gltf.scene.scale.set(1, 1, 1);
+			const root = gltf.scene;
+			// console.log(dumpObject(root).join('\n'));
+			cliff = root.getObjectByName('Sketchfab_Scene')
+			cliff.position.z = -10;
+			scene.add(root);
+		})
+
+
          //camera.position.x = 4;
-        camera.position.y = 1;
-        camera.position.z = 5;
+        camera.position.y = 20;
+        camera.position.z = 50;
 
         //---------
         var time = 0;
@@ -62,7 +85,7 @@
             time += 0.01;
             requestAnimationFrame(animate);
 
-            ground.rotation.y += 0.005;
+            //ground.rotation.y += 0.003;
             
             controls.update();
 
