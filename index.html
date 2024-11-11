@@ -27,68 +27,118 @@
         document.body.appendChild(renderer.domElement);
 
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
-        //--------
 
-        //Iluminação		
-		const directLight = new THREE.DirectionalLight(0xffffff, 1);
-		directLight.position.set(-10, 0, 10);
-		directLight.target.position.set(0, 0, 0);
-		const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-		scene.add(ambientLight, directLight);
-		scene.add(directLight.target);
-
-        const gridHelper = new THREE.GridHelper(10, 10);
-        //scene.add(gridHelper);
-
-        const axesHelper = new THREE.AxesHelper(5); // Cria um guia para os eixos cartesianos
-        //scene.add(axesHelper); 						// Adiciona os eixos na cena
+        // Iluminação
+        const directLight = new THREE.DirectionalLight(0xffffff, 1);
+        directLight.position.set(-10, 0, 10);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(ambientLight, directLight);
 
         var loader = new THREE.TextureLoader();
 
+        let tumbleweed, velocityX, velocityY, gravity, minBounceVelocity;
 
-        colorMap = loader.load("img/ground.jpg");
+        // Criação da tumbleweed (por exemplo, uma esfera)
+        const geometry = new THREE.SphereGeometry(1, 16, 16);
+        const material = new THREE.MeshBasicMaterial({ color: 0x8B4513 });
+        tumbleweed = new THREE.Mesh(geometry, material);
+        tumbleweed.position.y = 2; // Ajuste a posição inicial
+        tumbleweed.position.x = -35; // Ajuste a posição inicial
+        // scene.add(tumbleweed);
+
+        // Configurações iniciais de velocidade e gravidade
+        velocityX = 0.2; // velocidade no eixo X
+        velocityY = 0.2; // impulso inicial no eixo Y
+        gravity = 0.005; // gravidade para puxar para baixo
+        minBounceVelocity = 0.2; // velocidade mínima para manter o quique
+
+        ground_color = loader.load("img/ground2.jpg");
         spacebg = loader.load("img/space.jpg");
 
-        scene.background = spacebg;
+        // scene.background = spacebg;
 
-        const ground_geometry = new THREE.BoxGeometry(70, 0.5, 50);
+        const ground_geometry = new THREE.BoxGeometry(200, 3, 200);
         var ground_material = new THREE.MeshBasicMaterial({
-            map: colorMap
+            map: ground_color
         });
 
         const ground = new THREE.Mesh(ground_geometry, ground_material);
-
         scene.add(ground);
 
-        // Loader
-		const gltfLoader = new THREE.GLTFLoader();
-		
-		const url = '/assets/cliff/Desert_Western_Cliff_Layered_XL_02_uk5oded_High.gltf';
-		
-		gltfLoader.load(url, (gltf) => {
-			gltf.scene.scale.set(1, 1, 1);
-			const root = gltf.scene;
-			// console.log(dumpObject(root).join('\n'));
-			cliff = root.getObjectByName('Sketchfab_Scene')
-			cliff.position.z = -10;
-			scene.add(root);
-		})
+        // Loader para cenário adicional (exemplo de cliff)
+        const gltfLoader = new THREE.GLTFLoader();
 
+        const url_cliff = '/assets/cliff/Desert_Western_Cliff_Layered_XL_02_uk5oded_High.gltf';
+        const url_tumbleweed = '/assets/tumbleweed/scene.gltf';
+        const url_cow_skull = '/assets/cow_skull/scene.gltf';
+        const url_saloon = '/assets/saloon/scene.gltf';
 
-         //camera.position.x = 4;
+        gltfLoader.load(url_cliff, (gltf) => {
+            gltf.scene.scale.set(3, 3, 3);
+            const root = gltf.scene;
+            cliff = root.getObjectByName('Sketchfab_Scene');
+            cliff.position.z = -58;
+            cliff.position.x = -25;
+            cliff.position.y = 2.5;
+            scene.add(root);
+        });
+
+        gltfLoader.load(url_tumbleweed, (gltf) => {
+            gltf.scene.scale.set(0.01, 0.01, 0.01);
+            const root = gltf.scene;
+            tumbleweed = root.getObjectByName('Sketchfab_Scene');
+            tumbleweed.position.y = 5;
+            tumbleweed.position.x = -100;
+            scene.add(root);
+        });
+        
+        gltfLoader.load(url_cow_skull, (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            const root = gltf.scene;
+            cow_skull = root.getObjectByName('Sketchfab_Scene');
+            cow_skull.position.y = 0.5;
+            cow_skull.position.x = 20;
+            cow_skull.position.z = -20;
+            scene.add(root);
+        });
+
+        gltfLoader.load(url_saloon, (gltf) => {
+            gltf.scene.scale.set(100, 100, 100);
+            const root = gltf.scene;
+            saloon = root.getObjectByName('Sketchfab_Scene');
+            saloon.position.x = 85;
+            saloon.position.z = -40;
+            saloon.position.y = 3;
+            saloon.rotation.y = Math.PI;
+            scene.add(root);
+        });
+
         camera.position.y = 20;
         camera.position.z = 50;
 
-        //---------
-        var time = 0;
         var animate = function () {
-            time += 0.01;
+            // Movimento no eixo X (linear)
+            tumbleweed.position.x += velocityX;
+
+            // Aplicar gravidade no eixo Y
+            velocityY -= gravity;
+            tumbleweed.position.y += velocityY;
+
+            // Condição para quicar no chão (assumindo y=0 como o chão)
+            if (tumbleweed.position.y <= 4) { // Ajuste da altura do chão
+                tumbleweed.position.y = 5;
+
+                // Redefinir a velocidade de quique, mantendo uma mínima constante
+                velocityY = Math.max(-velocityY * 0.7, minBounceVelocity); // Mantenha a velocidade mínima para continuar quicando
+            }
+            if (tumbleweed.position.x >= 100) {
+                tumbleweed.position.x = -100;
+            }
+            // Rotação para simular movimento de rolamento
+            tumbleweed.rotation.z -= velocityX / 2;
+
             requestAnimationFrame(animate);
-
-            //ground.rotation.y += 0.003;
-            
             controls.update();
-
             renderer.render(scene, camera);
         };
         animate();

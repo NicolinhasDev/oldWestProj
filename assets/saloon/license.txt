@@ -1,0 +1,11 @@
+Model Information:
+* title:	Saloon
+* source:	https://sketchfab.com/3d-models/saloon-5dfedab06f574d1a83e9a8ee44d1fe92
+* author:	abi (https://sketchfab.com/abicreates.jpg)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Saloon" (https://sketchfab.com/3d-models/saloon-5dfedab06f574d1a83e9a8ee44d1fe92) by abi (https://sketchfab.com/abicreates.jpg) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
