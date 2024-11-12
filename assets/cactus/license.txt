@@ -1,0 +1,11 @@
+Model Information:
+* title:	Cactus - Textures - Free
+* source:	https://sketchfab.com/3d-models/cactus-textures-free-8e9c73a660144f06a7cd11d924fbcb36
+* author:	avd.multi (https://sketchfab.com/avd.multi)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Cactus - Textures - Free" (https://sketchfab.com/3d-models/cactus-textures-free-8e9c73a660144f06a7cd11d924fbcb36) by avd.multi (https://sketchfab.com/avd.multi) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

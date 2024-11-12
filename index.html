@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Aula06</title>
+    <title>Old Western</title>
     <style>
         body {
             margin: 0;
@@ -29,14 +29,22 @@
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
         // Iluminação
-        const directLight = new THREE.DirectionalLight(0xffffff, 1);
-        directLight.position.set(-10, 0, 10);
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-        scene.add(ambientLight, directLight);
+        //const directLight = new THREE.DirectionalLight(0xffffff, 1);
+        //directLight.position.set(-10, 0, 10);
+        const ambientLight = new THREE.AmbientLight(0x65aefc, 1);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0x65aefc, 5, 0);
+        pointLight.position.set(100, 100, 0);
+        scene.add(pointLight);
+        const pointLight2 = new THREE.PointLight(0xedf50c, 3, 0);
+        pointLight2.position.set(-30, 20, 60);
+        scene.add(pointLight2);
 
         var loader = new THREE.TextureLoader();
 
         let tumbleweed, velocityX, velocityY, gravity, minBounceVelocity;
+        let mixer;
 
         // Criação da tumbleweed (por exemplo, uma esfera)
         const geometry = new THREE.SphereGeometry(1, 16, 16);
@@ -50,15 +58,22 @@
         velocityX = 0.2; // velocidade no eixo X
         velocityY = 0.2; // impulso inicial no eixo Y
         gravity = 0.005; // gravidade para puxar para baixo
-        minBounceVelocity = 0.2; // velocidade mínima para manter o quique
+        minBounceVelocity = 0.3; // velocidade mínima para manter o quique
 
-        ground_color = loader.load("img/ground2.jpg");
-        spacebg = loader.load("img/space.jpg");
+        ground_color = loader.load("img/ground5.jpeg");
+        bg_color = loader.load("img/space.jpg");
 
-        // scene.background = spacebg;
+        sun_color = loader.load("img/moon2.jpg");
+        scene.background = bg_color;
+
+        const sun_geometry = new THREE.SphereGeometry(20, 32, 32);
+        const sun_material = new THREE.MeshBasicMaterial({ map: sun_color });
+        const sphere = new THREE.Mesh(sun_geometry, sun_material);
+        sphere.position.set(150, 100, 0);
+        scene.add(sphere);
 
         const ground_geometry = new THREE.BoxGeometry(200, 3, 200);
-        var ground_material = new THREE.MeshBasicMaterial({
+        var ground_material = new THREE.MeshStandardMaterial({
             map: ground_color
         });
 
@@ -72,6 +87,15 @@
         const url_tumbleweed = '/assets/tumbleweed/scene.gltf';
         const url_cow_skull = '/assets/cow_skull/scene.gltf';
         const url_saloon = '/assets/saloon/scene.gltf';
+        const url_cactus = '/assets/cactus/scene.gltf';
+        const url_horse_trot = '/assets/horse_trot/scene.gltf';
+        const url_horse_rigged = '/assets/horse_rigged/scene.gltf';
+        const url_fence_gate = '/assets/fence_gate/scene.gltf';
+        const url_fence1 = '/assets/fence1/scene.gltf';
+        const url_fence2 = '/assets/fence2/scene.gltf';
+        const url_fence3 = '/assets/fence3/scene.gltf';
+        const url_lamp = '/assets/lamp/scene.gltf';
+        const url_cloud = '/assets/cloud/scene.gltf';
 
         gltfLoader.load(url_cliff, (gltf) => {
             gltf.scene.scale.set(3, 3, 3);
@@ -84,39 +108,138 @@
         });
 
         gltfLoader.load(url_tumbleweed, (gltf) => {
-            gltf.scene.scale.set(0.01, 0.01, 0.01);
+            gltf.scene.scale.set(0.02, 0.02, 0.02);
             const root = gltf.scene;
             tumbleweed = root.getObjectByName('Sketchfab_Scene');
-            tumbleweed.position.y = 5;
+            tumbleweed.position.y = 6;
             tumbleweed.position.x = -100;
             scene.add(root);
         });
         
         gltfLoader.load(url_cow_skull, (gltf) => {
-            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            gltf.scene.scale.set(0.3, 0.3, 0.3);
             const root = gltf.scene;
             cow_skull = root.getObjectByName('Sketchfab_Scene');
-            cow_skull.position.y = 0.5;
-            cow_skull.position.x = 20;
+            cow_skull.position.y = 2;
+            cow_skull.position.x = -80;
             cow_skull.position.z = -20;
             scene.add(root);
         });
 
         gltfLoader.load(url_saloon, (gltf) => {
-            gltf.scene.scale.set(100, 100, 100);
+            gltf.scene.scale.set(150, 150, 150);
             const root = gltf.scene;
             saloon = root.getObjectByName('Sketchfab_Scene');
             saloon.position.x = 85;
-            saloon.position.z = -40;
+            saloon.position.z = -110;
             saloon.position.y = 3;
             saloon.rotation.y = Math.PI;
             scene.add(root);
         });
 
-        camera.position.y = 20;
-        camera.position.z = 50;
+        gltfLoader.load(url_cactus, (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            const root = gltf.scene;
+            cactus = root.getObjectByName('Sketchfab_Scene');
+            cactus.position.y = 0.5;
+            cactus.position.x = 20;
+            cactus.position.z = 90;
+            scene.add(root);
+        });
+
+        gltfLoader.load(url_horse_rigged, (gltf) => {
+            gltf.scene.scale.set(10, 10, 10);
+            const root = gltf.scene;
+            horse_trot = root.getObjectByName('Sketchfab_Scene');
+            horse_trot.position.y = 1;
+            horse_trot.position.x = -75;
+            horse_trot.position.z = 80;
+            horse_trot.rotation.y = Math.PI;
+            scene.add(root);
+        
+            mixer = new THREE.AnimationMixer(root);
+            const clips = gltf.animations;
+            const clip = THREE.AnimationClip.findByName(clips, 'Idle'); // Usando o nome correto da animação
+            const action = mixer.clipAction(clip);
+            action.play();
+        });
+
+        gltfLoader.load(url_fence_gate, (gltf) => {
+            gltf.scene.scale.set(8, 8, 8);
+            const root = gltf.scene;
+            fence_gate = root.getObjectByName('Sketchfab_Scene');
+            fence_gate.position.y = 0.5;
+            fence_gate.position.x = -95;
+            fence_gate.position.z = 10;
+            scene.add(root);
+        });
+
+        gltfLoader.load(url_fence2, (gltf) => {
+            gltf.scene.scale.set(20, 20, 20);
+            const root = gltf.scene;
+            fence2 = root.getObjectByName('Sketchfab_Scene');
+            fence2.position.y = 15;
+            fence2.position.x = -55;
+            fence2.position.z = 95;
+            scene.add(root);
+        });
+
+        gltfLoader.load(url_fence3, (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            const root = gltf.scene;
+            fence3 = root.getObjectByName('Sketchfab_Scene');
+            fence3.position.y = 0.5;
+            fence3.position.x = 20;
+            fence3.position.z = 50;
+            scene.add(root);
+        });
+        
+        gltfLoader.load(url_lamp, (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            const root = gltf.scene;
+            lamp = root.getObjectByName('Sketchfab_Scene');
+            lamp.position.set(-30, 20, 60);
+            scene.add(root);
+
+        });
+
+        gltfLoader.load(url_cloud, (gltf) => {
+            gltf.scene.scale.set(10, 10, 10);
+            const root = gltf.scene;
+            cloud = root.getObjectByName('Sketchfab_Scene');
+            cloud.position.set(0, 100, 0);
+            scene.add(root);
+        });
+
+       // Posição do ponto central (centro do modelo)
+        const target = new THREE.Vector3(0, 0, 0);
+
+        // Defina o raio da órbita
+        const radius = 150;
+
+        // Defina a velocidade de rotação (ângulo por quadro)
+        let angularSpeed = 0.005;
+        let angle = 0;
+        let direction = 1; // 1 para sentido horário, -1 para anti-horário
 
         var animate = function () {
+
+             // Atualize o ângulo para mover a câmera ao longo da órbita
+            angle += angularSpeed * direction;
+
+            // Se o ângulo atingir metade da órbita (π radianos), inverta a direção
+            if (angle >= Math.PI || angle <= 0) {
+                direction *= -1;
+            }
+
+            // Atualize a posição da câmera ao longo da órbita
+            camera.position.x = target.x + radius * Math.cos(angle);
+            camera.position.z = target.z + radius * Math.sin(angle);
+            camera.position.y = 50; // altura fixa ou ajustável
+
+            // A câmera sempre olha para o centro do modelo
+            camera.lookAt(target);
+
             // Movimento no eixo X (linear)
             tumbleweed.position.x += velocityX;
 
@@ -125,8 +248,8 @@
             tumbleweed.position.y += velocityY;
 
             // Condição para quicar no chão (assumindo y=0 como o chão)
-            if (tumbleweed.position.y <= 4) { // Ajuste da altura do chão
-                tumbleweed.position.y = 5;
+            if (tumbleweed.position.y <= 6) { // Ajuste da altura do chão
+                tumbleweed.position.y = 6;
 
                 // Redefinir a velocidade de quique, mantendo uma mínima constante
                 velocityY = Math.max(-velocityY * 0.7, minBounceVelocity); // Mantenha a velocidade mínima para continuar quicando
@@ -136,6 +259,10 @@
             }
             // Rotação para simular movimento de rolamento
             tumbleweed.rotation.z -= velocityX / 2;
+
+            if(mixer){
+            mixer.update(0.01);
+            }    
 
             requestAnimationFrame(animate);
             controls.update();
