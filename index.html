@@ -34,9 +34,14 @@
         const ambientLight = new THREE.AmbientLight(0x65aefc, 1);
         scene.add(ambientLight);
 
-        const pointLight = new THREE.PointLight(0x65aefc, 5, 0);
-        pointLight.position.set(100, 100, 0);
-        scene.add(pointLight);
+        const pointLight_moon = new THREE.PointLight(0x65aefc, 4, 0);
+        pointLight_moon.position.set(100, 100, 0);
+        scene.add(pointLight_moon);
+
+        const pointLight_sun = new THREE.PointLight(0xf9ee0e, 4, 0);
+        pointLight_sun.position.set(-100, -100, 0);
+        scene.add(pointLight_sun);
+
         const pointLight2 = new THREE.PointLight(0xedf50c, 3, 0);
         pointLight2.position.set(-30, 20, 60);
         scene.add(pointLight2);
@@ -63,14 +68,21 @@
         ground_color = loader.load("img/ground5.jpeg");
         bg_color = loader.load("img/space.jpg");
 
-        sun_color = loader.load("img/moon2.jpg");
+        moon_color = loader.load("img/moon2.jpg");
+        sun_color = loader.load("img/sun.jpg");
         scene.background = bg_color;
+
+        const moon_geometry = new THREE.SphereGeometry(20, 32, 32);
+        const moon_material = new THREE.MeshBasicMaterial({ map: moon_color });
+        const moon = new THREE.Mesh(moon_geometry, moon_material);
+        moon.position.set(150, 100, 0);
+        scene.add(moon);
 
         const sun_geometry = new THREE.SphereGeometry(20, 32, 32);
         const sun_material = new THREE.MeshBasicMaterial({ map: sun_color });
-        const sphere = new THREE.Mesh(sun_geometry, sun_material);
-        sphere.position.set(150, 100, 0);
-        scene.add(sphere);
+        const sun = new THREE.Mesh(sun_geometry, sun_material);
+        sun.position.set(150, 100, 0);
+        scene.add(sun);
 
         const ground_geometry = new THREE.BoxGeometry(200, 3, 200);
         var ground_material = new THREE.MeshStandardMaterial({
@@ -112,6 +124,7 @@
             const root = gltf.scene;
             tumbleweed = root.getObjectByName('Sketchfab_Scene');
             tumbleweed.position.y = 6;
+            tumbleweed.position.z = -5;
             tumbleweed.position.x = -100;
             scene.add(root);
         });
@@ -127,11 +140,11 @@
         });
 
         gltfLoader.load(url_saloon, (gltf) => {
-            gltf.scene.scale.set(150, 150, 150);
+            gltf.scene.scale.set(200, 200, 200);
             const root = gltf.scene;
             saloon = root.getObjectByName('Sketchfab_Scene');
-            saloon.position.x = 85;
-            saloon.position.z = -110;
+            saloon.position.x = 80;
+            saloon.position.z = -180;
             saloon.position.y = 3;
             saloon.rotation.y = Math.PI;
             scene.add(root);
@@ -144,6 +157,16 @@
             cactus.position.y = 0.5;
             cactus.position.x = 20;
             cactus.position.z = 90;
+            scene.add(root);
+        });
+
+        gltfLoader.load(url_cactus, (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);
+            const root = gltf.scene;
+            cactus = root.getObjectByName('Sketchfab_Scene');
+            cactus.position.y = 0.5;
+            cactus.position.x = 90;
+            cactus.position.z = -80;
             scene.add(root);
         });
 
@@ -222,8 +245,23 @@
         let angle = 0;
         let direction = 1; // 1 para sentido horário, -1 para anti-horário
 
+        let moon_angle = 0;
+        let sun_angle = Math.PI;
+
         var animate = function () {
 
+            moon.position.x = Math.cos(moon_angle) * radius;
+            moon.position.y = Math.sin(moon_angle) * radius;
+            pointLight_moon.position.x = Math.cos(moon_angle) * radius;
+            pointLight_moon.position.y = Math.sin(moon_angle) * radius;
+
+            sun.position.x = Math.cos(sun_angle) * radius;
+            sun.position.y = Math.sin(sun_angle) * radius;
+            pointLight_sun.position.x = Math.cos(sun_angle) * radius;
+            pointLight_sun.position.y = Math.sin(sun_angle) * radius;
+            
+            moon_angle+=0.01;
+            sun_angle+=0.01;
              // Atualize o ângulo para mover a câmera ao longo da órbita
             angle += angularSpeed * direction;
 
